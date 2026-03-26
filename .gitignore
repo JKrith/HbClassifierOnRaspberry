@@ -1,0 +1,16 @@
+
+
+__pycache__/
+saved_models/*
+!saved_models/
+logs/*
+!logs/
+
+
+*.csv
+*.bin
+*.code-workspace
+*.7z
+*.zip
+*.rar
+

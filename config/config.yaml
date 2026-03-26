@@ -1,0 +1,49 @@
+# =========================
+# Action ↔ Channel Mapping
+# =========================
+action_channel_map:
+  ym: [0, 5]
+  by: [1, 6]
+  lcx: [2, 7]
+  mz: [3, 8]
+  dz: [4, 9]
+
+# =========================
+# Serial Configuration
+# =========================
+serial:
+  port: COM14
+  baudrate: 230400
+  data_num: 11     # number of data points per frame
+  header : "0xA111"
+  footer : "0x5111"
+  byteorder : big
+
+# =========================
+# Data & CSV Configuration
+# =========================
+data:
+  csv:
+    file: output.csv
+    sample_rate: 1000    # Hz
+    title:
+      - time(ms)
+      - ch1
+      - ch2
+      - ch3
+      - ch4
+      - ch5
+      - ch6
+      - ch7
+      - ch8
+      - ch9
+      - ch10
+
+# =========================
+# Model Artifacts
+# =========================
+model:
+  paths:
+    model: saved_models/svm_loocv_20260111_134816.pkl
+    scaler: saved_models/svm_loocv_scaler_20260111_134816.pkl
+    config: saved_models/svm_loocv_config_20260111_134816.json
