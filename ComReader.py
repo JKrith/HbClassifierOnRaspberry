@@ -37,6 +37,7 @@ class UARTReader:
         self.frame_length = 2 + (2 * self.data_num) + 2  # Header + Data + Footer
         self.data_queue = queue.Queue()
         self.stop_event = threading.Event()
+        self.read_thread = None
 
     def open_serial(self):
         try:
@@ -124,8 +125,10 @@ class UARTReader:
 
     def stop(self):
         self.stop_event.set()
-        self.read_thread.join()
-        self.write_thread.join()
+        if self.read_thread:
+            self.read_thread.join()
+        if getattr(self, "write_thread", None):
+            self.write_thread.join()
         if self.csv_file_handle:
             self.csv_file_handle.close()  # 确保文件关闭
             logger.info(f"CSV file {self.csv_file} closed.")
@@ -136,14 +139,23 @@ class UARTReader:
 
 if __name__ == "__main__":
     # Configuration
-    PORT = "/dev/ttyACM0"  # Replace with your UART port (e.g., /dev/ttyS0 or /dev/ttyAMA0)
+    PORT = "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5B7A101239-if00"  # Replace with your UART port (e.g., /dev/ttyS0 or /dev/ttyAMA0)
     # PORT = 'COM12'
     BAUDRATE = 230400      # Set baudrate (e.g., 230400 or 460800)
     CSV_FILE = "./output.csv"
     DATA_LENGTH = 11       # Number of 2-byte data points in a frame
     CSV_TITLE = ['time(ms)'] + [f'ch{i+1}' for i in range(DATA_LENGTH-1)]
 
-    uart_reader = UARTReader(PORT, BAUDRATE, CSV_FILE, DATA_LENGTH, csv_title=CSV_TITLE)
+    uart_reader = UARTReader(
+    port=PORT,
+    baudrate=BAUDRATE,
+    data_num=DATA_LENGTH,
+    header=bytes.fromhex("A111"),
+    footer=bytes.fromhex("5111"),
+    byteorder='big',
+    csv_file=CSV_FILE,
+    csv_title=CSV_TITLE
+)
 
     try:
         uart_reader.start()
